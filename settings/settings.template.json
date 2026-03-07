@@ -1,0 +1,125 @@
+{
+  "env": {
+    "DISABLE_AUTOUPDATER": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Search",
+      "Bash(cd:*)",
+      "Bash(ls:*)",
+      "Bash(ls *)",
+      "Bash(ls -lh:*)",
+      "Bash(ls -la:*)",
+      "Bash(ls * | *)",
+      "Bash(find * | *)",
+      "Bash(uv:*)",
+      "Bash(uv *)",
+      "Bash(echo:*)",
+      "Bash(cat:*)",
+      "Bash(sleep:*)",
+      "Bash(tail:*)",
+      "Bash(tail *)",
+      "Bash(source:*)",
+      "Bash(source *)",
+      "Bash(find:*)",
+      "Bash(find *)",
+      "Bash(head:*)",
+      "Bash(head *)",
+      "Bash(grep:*)",
+      "Bash(grep *)",
+      "Bash(cd * | *)",
+      "Bash(grep * | *)",
+      "Bash(mkdir * | *)",
+      "Bash(head * | *)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push:*)",
+      "Bash(rsnc:*)",
+      "Bash(scp:*)",
+      "Bash(sftp:*)"
+    ],
+    "ask": [
+      "Bash(curl:*)",
+      "Bash(wget:*)"
+    ],
+    "defaultMode": "plan"
+  },
+  "model": "sonnet",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/safety-check.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/path-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/conventions.sh"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/session-context.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "npx ccusage@latest statusline"
+  },
+  "enabledPlugins": {
+    "code-simplifier@claude-plugins-official": true,
+    "ralph-loop@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "serena@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "explanatory-output-style@claude-plugins-official": true,
+    "biorxiv@life-sciences": true,
+    "10x-genomics@life-sciences": true,
+    "biorender@life-sciences": true,
+    "chembl@life-sciences": true,
+    "clinical-trial-protocol@life-sciences": true,
+    "clinical-trials@life-sciences": true,
+    "instrument-data-to-allotrope@life-sciences": true,
+    "medidata@life-sciences": true,
+    "nextflow-development@life-sciences": true,
+    "open-targets@life-sciences": true,
+    "owkin@life-sciences": true,
+    "pubmed@life-sciences": true,
+    "scvi-tools@life-sciences": true,
+    "single-cell-rna-qc@life-sciences": true,
+    "synapse@life-sciences": true,
+    "tooluniverse@life-sciences": true,
+    "wiley-scholar-gateway@life-sciences": true,
+    "code-review@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "supabase@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true
+  },
+  "language": "Japanese"
+}

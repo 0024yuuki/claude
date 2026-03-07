@@ -1,0 +1,45 @@
+# Claude Code - 機密情報とセッションデータを除外
+
+# 認証情報（絶対に含めない）
+.credentials.json
+**/credentials.json
+*.key
+*.pem
+hosts.yml
+
+# 会話履歴と個人データ
+history.jsonl
+*.jsonl
+stats-cache.json
+security_warnings_state_*.json
+
+# キャッシュとセッションデータ
+cache/
+session-env/
+file-history/
+debug/
+downloads/
+telemetry/
+shell-snapshots/
+
+# プロジェクト固有データ
+projects/
+plans/
+todos/
+
+# IDE固有
+ide/
+.vscode/
+.idea/
+
+# OS固有
+.DS_Store
+Thumbs.db
+*~
+
+# ローカル設定（機密情報を含む可能性）
+settings.local.json
+*.local.json
+
+# ログファイル
+*.log
