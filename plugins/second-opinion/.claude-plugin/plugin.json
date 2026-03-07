@@ -1,0 +1,8 @@
+{
+  "name": "second-opinion",
+  "version": "1.0.0",
+  "description": "複数のClaude モデルで並列実行して意見を比較",
+  "author": {
+    "name": "User"
+  }
+}
