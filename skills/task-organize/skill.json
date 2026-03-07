@@ -1,0 +1,25 @@
+{
+  "name": "task-organize",
+  "description": "Googleカレンダーから今月のイベントを取得し、タスクを整理してGitHub Issueに登録する",
+  "version": "1.0.0",
+  "author": "0024yuuki",
+  "trigger": "タスクを整理して",
+  "allowed-tools": [
+    "mcp__google-calendar__list-events",
+    "mcp__google-calendar__get-current-time",
+    "mcp__claude_ai_Google_Calendar__gcal_list_events",
+    "mcp__claude_ai_Google_Calendar__gcal_list_calendars",
+    "Bash(gh issue create:*)",
+    "Bash(gh issue list:*)",
+    "Bash(gh label list:*)",
+    "AskUserQuestion"
+  ],
+  "github": {
+    "repo": "0024yuuki/todo",
+    "labels": {
+      "category": ["work", "personal"],
+      "priority": ["priority: high", "priority: medium", "priority: low"],
+      "status": ["status: todo", "status: doing", "status: blocked"]
+    }
+  }
+}
