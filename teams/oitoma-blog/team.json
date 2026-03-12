@@ -1,0 +1,87 @@
+{
+  "name": "oitoma-blog",
+  "description": "oitoma.net ブログ月5万円達成エージェントチーム（SEO・アフィリエイト・コンテンツ計画・収益分析）",
+  "members": [
+    {
+      "name": "blog-write-pro",
+      "role": "SEO＋アフィリエイト最適化の長文記事（3,000〜4,000字）を作成・WordPress投稿する",
+      "color": "green",
+      "promptFile": "prompts/blog-write-pro.md"
+    },
+    {
+      "name": "seo-research",
+      "role": "ランニング・旅行ジャンルの勝てるキーワードを調査し seo/keyword-queue.md を生成する",
+      "color": "blue",
+      "promptFile": "prompts/seo-research.md"
+    },
+    {
+      "name": "monetize-audit",
+      "role": "既存記事のアフィリエイトリンクを監査し未挿入記事に商品リンクを追加する",
+      "color": "yellow",
+      "promptFile": "prompts/monetize-audit.md"
+    },
+    {
+      "name": "content-plan",
+      "role": "翌月のコンテンツカレンダーを大会シーズン・収益最大化の観点で計画する",
+      "color": "purple",
+      "promptFile": "prompts/content-plan.md"
+    },
+    {
+      "name": "growth-report",
+      "role": "月次収益・PV・記事数を集計し月5万円ロードマップへの進捗を可視化する",
+      "color": "red",
+      "promptFile": "prompts/growth-report.md"
+    }
+  ],
+  "workflow": {
+    "description": "月次サイクル + 週次サイクルの2層構造。ファイルベースでエージェント間データ連携する。",
+    "dataPipeline": {
+      "seo/keyword-queue.md": "seo-research が書く → blog-write-pro が読む",
+      "plans/YYYY-MM-plan.md": "content-plan が書く → blog-write-pro が参照",
+      "reports/YYYY-MM-report.md": "growth-report が書く → content-plan が参照"
+    },
+    "tasks": [
+      {
+        "id": 1,
+        "subject": "月次収益・成長レポート生成",
+        "owner": "growth-report",
+        "cadence": "月末"
+      },
+      {
+        "id": 2,
+        "subject": "翌月コンテンツカレンダー生成",
+        "owner": "content-plan",
+        "cadence": "月末",
+        "blockedBy": [1]
+      },
+      {
+        "id": 3,
+        "subject": "既存記事アフィリエイト監査・リンク追加",
+        "owner": "monetize-audit",
+        "cadence": "月初"
+      },
+      {
+        "id": 4,
+        "subject": "週次キーワード調査・keyword-queue.md 更新",
+        "owner": "seo-research",
+        "cadence": "週1回（月曜）"
+      },
+      {
+        "id": 5,
+        "subject": "SEO＋アフィリエイト最適化記事の作成・投稿",
+        "owner": "blog-write-pro",
+        "cadence": "週1〜2回",
+        "blockedBy": [4]
+      }
+    ]
+  },
+  "roadmap": {
+    "goal": "月5万円達成",
+    "phases": [
+      { "phase": 1, "period": "1〜3ヶ月", "targetPV": 3000, "targetRevenue": 3000 },
+      { "phase": 2, "period": "4〜6ヶ月", "targetPV": 15000, "targetRevenue": 15000 },
+      { "phase": 3, "period": "7〜9ヶ月", "targetPV": 40000, "targetRevenue": 30000 },
+      { "phase": 4, "period": "10〜12ヶ月", "targetPV": 70000, "targetRevenue": 50000 }
+    ]
+  }
+}
