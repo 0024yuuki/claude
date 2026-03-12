@@ -1,0 +1,32 @@
+{
+  "name": "code-review",
+  "description": "コードレビュー専門チーム（セキュリティ・パフォーマンス・テスト）",
+  "members": [
+    {
+      "name": "security-reviewer",
+      "role": "セキュリティ脆弱性の専門家",
+      "color": "blue",
+      "promptFile": "prompts/security-reviewer.md"
+    },
+    {
+      "name": "performance-reviewer",
+      "role": "パフォーマンス最適化の専門家",
+      "color": "green",
+      "promptFile": "prompts/performance-reviewer.md"
+    },
+    {
+      "name": "test-reviewer",
+      "role": "テスト品質の専門家",
+      "color": "yellow",
+      "promptFile": "prompts/test-reviewer.md"
+    }
+  ],
+  "workflow": {
+    "tasks": [
+      { "id": 1, "subject": "セキュリティレビュー", "owner": "security-reviewer" },
+      { "id": 2, "subject": "パフォーマンスレビュー", "owner": "performance-reviewer" },
+      { "id": 3, "subject": "テストレビュー", "owner": "test-reviewer" },
+      { "id": 4, "subject": "レビュー結果集約・レポート作成", "owner": "review-lead", "blockedBy": [1, 2, 3] }
+    ]
+  }
+}
