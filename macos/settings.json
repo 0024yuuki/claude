@@ -1,6 +1,7 @@
 {
   "env": {
-    "DISABLE_AUTOUPDATER": "1"
+    "DISABLE_AUTOUPDATER": "1",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
     "allow": [
@@ -37,7 +38,6 @@
     ],
     "deny": [
       "Bash(rm -rf:*)",
-      "Bash(git push:*)",
       "Bash(rsnc:*)",
       "Bash(scp:*)",
       "Bash(sftp:*)"
@@ -48,7 +48,6 @@
     ],
     "defaultMode": "plan"
   },
-  "model": "sonnet",
   "hooks": {
     "PostToolUse": [
       {
@@ -68,34 +67,6 @@
           {
             "type": "command",
             "command": "$HOME/.claude/hooks/opus-push-review.sh"
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/safety-check.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/path-guard.sh"
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/conventions.sh"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "startup|resume",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/session-context.sh"
           }
         ]
       }
@@ -134,7 +105,10 @@
     "frontend-design@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true,
     "supabase@claude-plugins-official": true,
-    "playwright@claude-plugins-official": true
+    "playwright@claude-plugins-official": true,
+    "oitoma-blog@user-plugins": true
   },
-  "language": "Japanese"
+  "language": "Japanese",
+  "tui": "fullscreen",
+  "model": "claude-fable-5[1m]"
 }

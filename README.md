@@ -1,89 +1,73 @@
 # Claude Code Configuration Repository
 
-このリポジトリは、Claude Code の設定、カスタムフック、スキルを管理するためのものです。
+Claude Code の設定・フック・コマンドを Git 管理し、`install.sh` で `~/.claude` に
+**symlink** として反映するためのリポジトリ。手動 `cp` によるドリフトを排除する。
 
 ## 📁 構成
 
 ```
 claude/
-├── hooks/                # カスタムフック（セッション開始時などに実行）
-├── plugins/              # カスタムプラグイン
-│   └── second-opinion/  # 複数モデル並列実行＆比較プラグイン
-├── settings/             # 汎用的な設定ファイルテンプレート
-├── skills/               # 自作スキル定義
-├── teams/                # エージェントチーム定義
-│   └── code-review/     # コードレビュー専門チーム
-└── docs/                 # ドキュメント
+├── install.sh            symlink 一括作成スクリプト（冪等・--check/--dry-run 対応）
+├── macos/                この Mac 用（~/.claude へ symlink される）
+│   ├── settings.json     設定マスター（機密なし。差分表示のみ、symlink はしない）
+│   ├── CLAUDE.md         グローバル CLAUDE.md（宣言ルール）
+│   ├── hooks/            opus-plan-review.sh / opus-push-review.sh
+│   └── commands/         second-opinion.md / task-organize.md
+├── lab-linux/            Linux ラボ共有サーバー専用（macOS では動作しない）
+│   └── hooks/            safety-check / path-guard / conventions / session-context
+├── teams/                エージェントチーム定義（code-review / oitoma-blog）
+├── docs/                 セットアップ・MCP ドキュメント
+└── CHANGELOG.md
 ```
+
+> **重要**: `macos/` と `lab-linux/` は別マシン向け。混在させない。
+> このリポジトリはかつて両者を無差別に混ぜており、Linux 専用フックを macOS に
+> 適用しようとして破綻していた（2026-07 に分離）。
 
 ## 🔧 含まれるもの
 
-### Hooks（カスタムフック）
+### macOS 用フック（`macos/hooks/`）
+- **opus-push-review.sh** — `git push` 前に Opus がコード差分をレビュー（PreToolUse:Bash・通知型）
+- **opus-plan-review.sh** — プラン承認後に Opus がプランをレビュー（PostToolUse:ExitPlanMode）
 
-Claude Code のセッション開始時や特定のイベント時に実行されるシェルスクリプト:
+### macOS 用コマンド（`macos/commands/`）
+- **/second-opinion** — Opus によるオンデマンドコードレビュー（`--staged` / `--last`）
+- **/task-organize** — Google カレンダー → GitHub Issue 変換
 
-- **opus-push-review.sh** - `git push` 前に Opus がコード差分をレビュー（PreToolUse:Bash）
-- **opus-plan-review.sh** - プラン承認後に Opus がプランをレビュー（PostToolUse:ExitPlanMode）
-- **conventions.sh** - コーディング規約のチェック
-- **path-guard.sh** - パス操作の安全性チェック
-- **safety-check.sh** - 危険な操作の検出
-- **session-context.sh** - セッションコンテキストの設定
+### Linux ラボ用フック（`lab-linux/hooks/`）
+研究室の共有計算サーバー（SGE・conda・`/home/yuki0024/`）専用。詳細は
+[lab-linux/README.md](lab-linux/README.md)。
 
-### Plugins（プラグイン）
-
-独自に作成したカスタムプラグイン:
-
-- **second-opinion**: Claude Opus によるコードレビュー（セカンドオピニオン）。`/second-opinion` で起動
-
-### Settings（設定）
-
-Claude Code の汎用的な設定テンプレート（機密情報は含まない）
-
-### Skills（スキル）
-
-独自に作成したカスタムスキル
-
-### Teams（エージェントチーム）
-
-複数の専門エージェントが協調して作業するチーム定義:
-
-- **code-review**: セキュリティ・パフォーマンス・テストの3専門家が並列レビューを実施
-
-## 📦 セットアップ
-
-詳細は [docs/setup.md](docs/setup.md) を参照してください。
-
-### クイックスタート
+## 📦 セットアップ（この Mac）
 
 ```bash
-# リポジトリをクローン
+# クローン
 gh repo clone 0024yuuki/claude ~/claude
+cd ~/claude
 
-# フックをコピーして実行権限を付与
-mkdir -p ~/.claude/hooks
-cp ~/claude/hooks/*.sh ~/.claude/hooks/
-chmod +x ~/.claude/hooks/*.sh
+# 差分確認（変更しない）
+./install.sh --check
 
-# /second-opinion コマンドをコピー
-mkdir -p ~/.claude/commands
-cp ~/claude/plugins/second-opinion/commands/second-opinion.md ~/.claude/commands/
-
-# 設定をコピー（必要に応じて編集）
-cp ~/claude/settings/settings.template.json ~/.claude/settings.json
+# symlink を反映（既存実体は ~/.claude/backups/ へ自動退避）
+./install.sh
 ```
+
+`settings.json` は symlink せず、`macos/settings.json` をマスターとして
+`install.sh` が差分表示するのみ（個人トークン等の誤 push を避けるため手動反映）。
+
+## 🔄 同期の考え方
+
+- フックやコマンドを編集 → `macos/` 配下を直接編集すれば **symlink 経由で即反映**。
+- 実環境を触ってしまった場合 → `./install.sh --check` でドリフト検知、`./install.sh` で復元。
 
 ## ⚠️ セキュリティ
 
-このリポジトリには以下を**絶対に含めません**:
+`.gitignore` で認証情報・会話履歴・`*.local.json` を除外。以下は**絶対に含めない**:
+- 認証情報（`credentials.json`, `*.key`, `*.pem`）
+- 会話履歴・セッションデータ（`history.jsonl`, `projects/`, `plans/`）
 
-- 認証情報（`.credentials.json`、APIキーなど）
-- 会話履歴やセッションデータ
-- プロジェクト固有の機密情報
+## 🔗 関連
 
-## 📝 ライセンス
-
-個人用設定リポジトリ
-
-## 🔗 関連リンク
-
+- [docs/setup.md](docs/setup.md) — 詳細セットアップ
+- [docs/mcp-notebooklm.md](docs/mcp-notebooklm.md) — NotebookLM MCP
 - [Claude Code 公式ドキュメント](https://github.com/anthropics/claude-code)

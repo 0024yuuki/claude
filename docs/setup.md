@@ -1,158 +1,92 @@
-# Claude Code 設定のセットアップガイド
+# セットアップガイド
 
-このガイドでは、このリポジトリに保存されている Claude Code の設定を新しい環境に適用する方法を説明します。
+このリポジトリの設定を `~/.claude` に反映する方法。`macos/`（この Mac）と
+`lab-linux/`（研究室 Linux サーバー）で手順が異なる。
 
-## 📋 前提条件
+## 前提条件
+- Claude Code / Git / GitHub CLI (`gh`)
 
-- Claude Code がインストールされていること
-- Git がインストールされていること
-- GitHub CLI (gh) がインストールされていること（推奨）
+---
 
-## 🚀 セットアップ手順
+## macOS（この Mac）
 
-### 1. リポジトリのクローン
-
+### 1. クローン
 ```bash
-# GitHub CLI を使用する場合
-gh repo clone 0024yuuki/claude
-
-# または通常の git を使用
-git clone https://github.com/0024yuuki/claude.git
-cd claude
-```
-
-### 2. フックのインストール
-
-カスタムフックを Claude の設定ディレクトリにコピーします:
-
-```bash
-# フックディレクトリを作成（存在しない場合）
-mkdir -p ~/.claude/hooks
-
-# フックをコピー
-cp -r hooks/* ~/.claude/hooks/
-
-# 実行権限を付与
-chmod +x ~/.claude/hooks/*.sh
-```
-
-### 3. 設定ファイルの適用
-
-```bash
-# 既存の設定をバックアップ（念のため）
-cp ~/.claude/settings.json ~/.claude/settings.json.backup
-
-# テンプレートをコピー
-cp settings/settings.template.json ~/.claude/settings.json
-```
-
-**注意**: `settings.template.json` には以下が含まれています:
-- パーミッション設定（allow/deny/ask）
-- フック設定
-- 有効なプラグインリスト
-- デフォルトモデル設定
-
-必要に応じて編集してください。
-
-### 4. フックの動作確認
-
-各フックの目的:
-
-- **safety-check.sh**: 危険な Bash コマンド（`rm -rf` など）を検出
-- **path-guard.sh**: 書き込み操作の対象パスが安全かチェック
-- **conventions.sh**: コーディング規約に従っているかチェック
-- **session-context.sh**: セッション開始時にプロジェクトコンテキストを設定
-
-フックが正しく動作するかテスト:
-
-```bash
-# safety-check.sh のテスト
-echo 'rm -rf /' | ~/.claude/hooks/safety-check.sh
-
-# 危険なコマンドの場合、エラーメッセージが表示されるはずです
-```
-
-## 🎯 カスタマイズ
-
-### 独自のフックを追加
-
-1. `~/.claude/hooks/` に新しいシェルスクリプトを作成
-2. 実行権限を付与: `chmod +x ~/.claude/hooks/your-hook.sh`
-3. `settings.json` の `hooks` セクションに登録
-
-### スキルの追加
-
-自作スキルは `skills/` ディレクトリに配置し、以下の形式で管理:
-
-```
-skills/
-└── your-skill-name/
-    ├── skill.json          # スキル定義
-    ├── instructions.md     # 説明
-    └── examples/           # 使用例
-```
-
-## 🔄 設定の同期
-
-### ローカルからリポジトリへ
-
-新しいフックやスキルを作成したら、リポジトリに追加:
-
-```bash
-# 変更をコミット
-git add hooks/ skills/ settings/
-git commit -m "Add new hook/skill"
-git push
-```
-
-### リポジトリからローカルへ
-
-他の環境で追加した設定を取得:
-
-```bash
+gh repo clone 0024yuuki/claude ~/claude
 cd ~/claude
-git pull
-cp -r hooks/* ~/.claude/hooks/
-chmod +x ~/.claude/hooks/*.sh
 ```
 
-## ⚠️ 重要な注意事項
+### 2. 差分確認 → symlink 反映
+```bash
+# 現状のドリフトを確認（何も変更しない）
+./install.sh --check
 
-### 絶対に含めてはいけないもの
+# 反映（既存実体は ~/.claude/backups/install-<日時>/ へ自動退避してから symlink 化）
+./install.sh
+```
 
-- `.credentials.json` - 認証情報
-- `history.jsonl` - 会話履歴
-- APIキーや個人情報を含むファイル
+`install.sh` が張る symlink:
 
-### プロジェクト固有の設定
+| 実環境 | → リポジトリ |
+|--------|--------------|
+| `~/.claude/hooks/opus-plan-review.sh` | `~/claude/macos/hooks/opus-plan-review.sh` |
+| `~/.claude/hooks/opus-push-review.sh` | `~/claude/macos/hooks/opus-push-review.sh` |
+| `~/.claude/commands/second-opinion.md` | `~/claude/macos/commands/second-opinion.md` |
+| `~/.claude/commands/task-organize.md` | `~/claude/macos/commands/task-organize.md` |
+| `~/.claude/CLAUDE.md` | `~/claude/macos/CLAUDE.md` |
 
-`claude.md` などのプロジェクト固有の設定は、プロジェクトのリポジトリで管理し、この汎用設定リポジトリには含めません。
+### 3. settings.json（手動）
+`settings.json` は symlink しない（個人依存の設定を含むため）。
+`macos/settings.json` をマスターとし、`install.sh` は差分表示のみ行う。
+反映したい場合は内容を確認のうえ手動でコピー:
+```bash
+diff macos/settings.json ~/.claude/settings.json
+cp macos/settings.json ~/.claude/settings.json   # 必要な場合のみ
+```
 
-## 🔧 トラブルシューティング
+### 4. 動作確認
+```bash
+ls -la ~/.claude/hooks/      # 2 本が ~/claude/macos/hooks/ を指す symlink
+./install.sh --check         # → CHECK OK
+```
+Claude Code を再起動するとフック・コマンドが有効になる。
 
-### フックが実行されない
+---
+
+## Linux ラボ共有サーバー
+
+`lab-linux/hooks/` のフックは SGE・conda・`/home/yuki0024/` を前提とし、
+**macOS では動作しない**。該当サーバーでのみ:
 
 ```bash
-# 実行権限を確認
-ls -la ~/.claude/hooks/
-
-# 権限がない場合は付与
+mkdir -p ~/.claude/hooks
+cp ~/claude/lab-linux/hooks/*.sh ~/.claude/hooks/
 chmod +x ~/.claude/hooks/*.sh
 ```
+その後 `~/.claude/settings.json` の `hooks` に登録する。詳細は
+[../lab-linux/README.md](../lab-linux/README.md)。
 
-### 設定が反映されない
+---
 
-Claude Code を再起動してください。
+## 同期フロー
 
-### フックがエラーを返す
-
-フックスクリプトを直接実行してデバッグ:
-
+### リポジトリ → 実環境
 ```bash
-bash -x ~/.claude/hooks/safety-check.sh
+cd ~/claude && git pull && ./install.sh
 ```
+symlink なのでフック本体の編集は `git pull` だけで反映される（`install.sh` は
+symlink 未設定時のみ必要）。
 
-## 📚 参考リンク
+### 実環境 → リポジトリ
+`macos/` 配下を直接編集して commit・push。symlink 経由で実環境にも即反映される。
 
-- [Claude Code 公式ドキュメント](https://github.com/anthropics/claude-code)
-- [Hooks の詳細](https://github.com/anthropics/claude-code/blob/main/docs/hooks.md)
+---
+
+## トラブルシューティング
+
+**フックが動かない** → `ls -la ~/.claude/hooks/` で symlink 切れ（`-> ...（赤）`）を確認し
+`./install.sh` で貼り直す。実行権限は `chmod +x macos/hooks/*.sh`。
+
+**ドリフトが出る** → `./install.sh --check` で差分箇所を特定。
+
+**設定が反映されない** → Claude Code を再起動。
