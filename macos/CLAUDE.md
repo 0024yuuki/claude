@@ -1,31 +1,21 @@
 # グローバル Claude Code 設定
 
-全プロジェクト・全セッション共通のルール。プロジェクト固有の CLAUDE.md がある場合はそちらが優先される。
+全プロジェクト・全セッション共通のルール。プロジェクト固有の CLAUDE.md があればそちらが優先。
 
-## 自動 Opus レビュー（hooks）
+## 自動レビュー
 
-以下のタイミングで自動的に Claude Opus がレビューを実行する：
+- **プラン承認後**、Opus が自動でプランをレビューする（見落とし・リスク検出）。
+- **`git push` 前**、Opus が自動でコード差分をレビューする（通知のみ・ブロックしない）。
 
-| タイミング | フック種別 | 目的 |
-|-----------|-----------|------|
-| プラン承認後（ExitPlanMode） | PostToolUse | プランの問題・リスク検出 |
-| git push 実行前（Bash） | PreToolUse | コード差分のレビュー（通知のみ・ブロックなし） |
+## 利用可能なスラッシュコマンド
 
-## スラッシュコマンド
-
-| コマンド | 説明 |
+| コマンド | 用途 |
 |---------|------|
-| `/second-opinion` | Opus によるオンデマンドコードレビュー |
-| `/second-opinion --staged` | ステージ済み変更のみレビュー |
-| `/second-opinion --last` | 最終コミットのみレビュー |
+| `/second-opinion` | Opus によるオンデマンドコードレビュー（`--staged` / `--last`） |
 | `/task-organize` | Google カレンダー → GitHub Issue 変換 |
 
-## フック設定場所
+## 設定の管理
 
-- `~/.claude/hooks/opus-push-review.sh` — PreToolUse:Bash（git push 検出）
-- `~/.claude/hooks/opus-plan-review.sh` — PostToolUse:ExitPlanMode
-- 設定登録: `~/.claude/settings.json` の `hooks` セクション
-
-## リポジトリ
-
-設定のバージョン管理: `https://github.com/0024yuuki/claude`（ローカル: `~/claude/`）
+この設定は `github.com/0024yuuki/claude`（ローカル `~/claude/`）で Git 管理され、
+`install.sh` により `~/.claude/` へ symlink 反映される。
+セットアップ手順・フックの実装場所などの手続きは同リポジトリの `docs/setup.md` を参照。
