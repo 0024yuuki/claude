@@ -30,6 +30,7 @@ esac
 LINKS=(
   "hooks/opus-plan-review.sh"
   "hooks/opus-push-review.sh"
+  "hooks/strip-quarantine.sh"
   "commands/second-opinion.md"
   "commands/task-organize.md"
   "CLAUDE.md"
