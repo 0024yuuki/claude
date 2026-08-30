@@ -25,7 +25,7 @@ echo ""
 
 REVIEW=$(echo "以下のコード変更を git push 前にレビューしてください。バグ・セキュリティ問題・コード品質について日本語で簡潔に報告してください：
 
-$DIFF" | claude --model claude-opus-4-8 --print 2>&1)
+$DIFF" | claude --model opus --print 2>&1)
 
 echo "$REVIEW"
 echo ""

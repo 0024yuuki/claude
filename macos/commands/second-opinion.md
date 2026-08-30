@@ -39,7 +39,7 @@ allowed-tools:
    DIFF=$(git diff origin/$(git branch --show-current)..HEAD 2>/dev/null || git diff HEAD~1..HEAD 2>/dev/null)
    echo "以下のコード変更についてセカンドオピニオンをお願いします。バグ・セキュリティ脆弱性・コード品質・パフォーマンス・改善提案を日本語で詳しく報告してください：
 
-   $DIFF" | claude --model claude-opus-4-8 --print
+   $DIFF" | claude --model opus --print
    ```
 
 4. Opus の指摘事項を以下の形式で要点まとめして報告する：

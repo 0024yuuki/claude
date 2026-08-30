@@ -19,8 +19,14 @@ Claude Code のセッション中、特定のタイミングで実行される�
 
 ### opus-plan-review.sh
 
-`~/.claude/plans/*.md` の**最新ファイル**を拾い、`claude --model claude-opus-4-8 --print`
+`~/.claude/plans/*.md` の**最新ファイル**を拾い、`claude --model opus --print`
 に投げてレビュー結果を出力する。プランファイルが無ければ何もせず終了。
+
+> 📌 **モデルは `opus` エイリアスで指定する（バージョンを固定しない）。**
+> 以前は `claude-opus-4-8` に固定されており、Opus が世代交代しても追随せず、
+> **「Opus によるレビュー」と称しながら旧世代を呼び続けていた**。
+> 常に最新の Opus を使いたいので `opus` を使う。`opus-push-review.sh` と
+> `commands/second-opinion.md` も同様。
 
 ### opus-push-review.sh
 

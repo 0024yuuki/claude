@@ -18,7 +18,7 @@ PLAN_CONTENT=$(cat "$PLAN_FILE")
 
 REVIEW=$(echo "以下のプランをレビューしてください。潜在的な問題・見落とし・リスク・改善案を日本語で指摘してください：
 
-$PLAN_CONTENT" | claude --model claude-opus-4-8 --print 2>&1)
+$PLAN_CONTENT" | claude --model opus --print 2>&1)
 
 echo "$REVIEW"
 echo ""

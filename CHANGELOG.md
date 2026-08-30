@@ -26,6 +26,21 @@ Claude Code 設定・カスタマイズの変更履歴。
 - **`macos/settings.json` に `hooks.Stop` を追加**（`strip-quarantine.sh`・timeout 20秒）。
   - ⚠️ `settings.json` は symlink されず `install.sh` は差分表示のみのため、
     **`~/.claude/settings.json` 側にも同じ内容を手で入れてある**（二重管理）。
+- **`install.sh` の `LINKS` に `hooks/strip-quarantine.sh` を追加**。
+  ハードコードのため、追加しないと別マシンで symlink が張られず
+  **settings.json だけが存在しないフックを参照する**状態になっていた。
+- **レビュー用の呼び出しをバージョン固定から `opus` エイリアスへ変更**（4箇所）。
+  `claude-opus-4-8` に固定されており、Opus が世代交代しても追随せず、
+  **「Opus によるレビュー」と称しながら旧世代を呼び続けていた**。
+  対象: `hooks/opus-plan-review.sh` / `hooks/opus-push-review.sh` /
+  `commands/second-opinion.md`（＋ `hooks/README.md` の記載）。
+- **`macos/hooks/README.md` を実態に合わせて全面改訂**。
+  2026-07-02 に `lab-linux/` へ隔離した4本（safety-check / path-guard /
+  conventions / session-context）を説明したまま残っており、
+  **稼働中の opus フック2本が1つも書かれていなかった**
+  （隔離した4本は `lab-linux/README.md` に正しく記載済みで、内容が重複していた）。
+  セットアップを `cp` から `install.sh` の symlink に修正し、
+  settings.json の二重管理・登録直後は効かない点・テスト手順（動作確認済み）を追記。
 
 ---
 
