@@ -4,6 +4,31 @@ Claude Code 設定・カスタマイズの変更履歴。
 
 ---
 
+## 2026-08-30
+
+### Added
+- **`macos/hooks/strip-quarantine.sh`（Stop フック）を追加**：Obsidian vault 配下から
+  `com.apple.quarantine` を自動除去する。
+  - **背景**：Claude Code が書いたファイルには macOS の隔離属性が継承され、
+    **Obsidian がそのファイルをインデックスしない**。結果、ディスク上には存在するのに
+    ファイル一覧に現れず、リンクを踏むと「File already exists」になる。
+    発覚時点で **16ファイル**が数週間ぶん埋もれていた。
+  - **自力検出できない不具合**である点が問題だった。`Write` は成功を返し、
+    `ls` も `git status` も正常（**git は拡張属性を保存しない**）。
+    本人が開こうとして初めて発覚する。→ 記録ではなくフックで塞ぐ判断。
+  - `com.apple.quarantine` のみを対象とし、`com.apple.provenance` 等には触れない。
+    ファイル内容・権限・タイムスタンプは変更しない。常に exit 0。
+  - **⚠️ 防げるのは新規の書き込みだけ**。既にインデックスから漏れたファイルは
+    Obsidian を `Cmd+Q` で完全終了して再起動する必要がある
+    （「Reload app without saving」では不十分）。
+
+### Changed
+- **`macos/settings.json` に `hooks.Stop` を追加**（`strip-quarantine.sh`・timeout 20秒）。
+  - ⚠️ `settings.json` は symlink されず `install.sh` は差分表示のみのため、
+    **`~/.claude/settings.json` 側にも同じ内容を手で入れてある**（二重管理）。
+
+---
+
 ## 2026-07-02
 
 ### Changed（設定監査に基づく再構成）

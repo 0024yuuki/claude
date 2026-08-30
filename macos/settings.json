@@ -70,6 +70,18 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/strip-quarantine.sh",
+            "timeout": 20,
+            "statusMessage": "Obsidian: 隔離属性を除去中"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -80,7 +92,6 @@
     "code-simplifier@claude-plugins-official": true,
     "ralph-loop@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
-    "serena@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "explanatory-output-style@claude-plugins-official": true,
     "biorxiv@life-sciences": true,
