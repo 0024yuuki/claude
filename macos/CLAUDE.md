@@ -7,6 +7,14 @@
 - **プラン承認後**、Opus が自動でプランをレビューする（見落とし・リスク検出）。
 - **`git push` 前**、Opus が自動でコード差分をレビューする（通知のみ・ブロックしない）。
 
+## 自動チェック
+
+- **セッション開始時**、Obsidian vault の同期が詰まっていないか確認する（`obsidian-sync-check.sh`）。
+  未解決の競合（`UU`）・中断したマージ・未 push のコミットを検出したら警告する。正常なら沈黙。
+  **2026-10-07 に push が6日間無症状で停止していたため追加**（→ vault の
+  `09_Claude/Knowledge/obsidian-git-stale-merge-index.md`）。ネットワークは使わない。
+- **ファイル書き込み後**、Obsidian vault の macOS 隔離属性を除去する（`strip-quarantine.sh`）。
+
 ## 利用可能なスラッシュコマンド
 
 | コマンド | 用途 |

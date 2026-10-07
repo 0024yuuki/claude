@@ -82,6 +82,18 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/obsidian-sync-check.sh",
+            "timeout": 15,
+            "statusMessage": "Obsidian: 同期状態を確認中"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
